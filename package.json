@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development node src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
     "dev": "NODE_ENV=development nodemon src/index.js"
   },
   "keywords": [],
@@ -12,7 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.1",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "mongoose": "^6.3.5",
+    "morgan": "^1.10.0",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
