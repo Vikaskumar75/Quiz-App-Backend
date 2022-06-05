@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const AppError = require('../utils/app_error');
+const Session = require('./user_sessions');
 
 const schemaOptions = { timeStamps: true };
 
@@ -57,6 +58,11 @@ userSchema.statics.findByCredentials = async function (email, password) {
 
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 8);
+  next();
+});
+
+userSchema.pre('remove', async function (next) {
+  await Session.deleteMany({ user: this._id });
   next();
 });
 

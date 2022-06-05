@@ -62,4 +62,30 @@ const me = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { login, signup, logout, me };
+const updateMe = catchAsync(async (req, res, next) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ['name', 'password'];
+
+  const isValidUpdate = updates.every((e) => allowedUpdates.includes(e));
+  if (!isValidUpdate) {
+    throw new AppError(
+      400,
+      `Invalid update data. You can only update ${allowedUpdates}`
+    );
+  }
+  const user = req.user;
+  updates.forEach((update) => (user[update] = req.body[update]));
+  await user.save();
+
+  res.send({
+    status: 'success',
+    data: { user },
+  });
+});
+
+const deleteMe = catchAsync(async (req, res, next) => {
+  await req.user.remove();
+  res.status(204).send();
+});
+
+module.exports = { login, signup, logout, me, updateMe, deleteMe };
