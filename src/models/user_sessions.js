@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const schemaOptions = { timeStamps: true };
 
 const schema = {
-  ip: String,
+  ip_address: {
+    type: String,
+    required: [true, 'Please provide an ip_address'],
+  },
   device_name: String,
   device_manufacturer: String,
   android_version: String,

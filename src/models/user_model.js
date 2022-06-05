@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
-const Session = require('./user_sessions');
+const AppError = require('../utils/app_error');
 
 const schemaOptions = { timeStamps: true };
 
@@ -42,13 +42,17 @@ userSchema.methods.toJSON = function () {
 
 userSchema.methods.createJwtToken = function () {
   const token = jwt.sign(this._id.toString(), process.env.JWT_SECRET);
-  console.log(token);
-  const session = new Session({
-    token,
-    user: this._id,
-  });
-  session.save();
   return token;
+};
+
+userSchema.statics.findByCredentials = async function (email, password) {
+  const user = await User.findOne({ email });
+  if (!user) throw new AppError(404, 'No user found with that email');
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new AppError(401, 'Invaid password');
+
+  return user;
 };
 
 userSchema.pre('save', async function (next) {
