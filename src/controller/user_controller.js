@@ -1,6 +1,9 @@
+// Models
 const User = require('../models/user_model');
 const Session = require('../models/user_sessions');
 const AppError = require('../utils/app_error');
+
+// Utils
 const catchAsync = require('../utils/catch_async');
 
 const login = catchAsync(async (req, res, next) => {
@@ -45,9 +48,11 @@ const signup = catchAsync(async (req, res, next) => {
 });
 
 const logout = catchAsync(async (req, res, next) => {
-
-  
-
+  await Session.findOneAndDelete({ ip_address: req.ip, user: req.user._id });
+  res.status(205).send({
+    status: 'success',
+    user: req.user,
+  });
 });
 
 const me = catchAsync(async (req, res, next) => {
