@@ -56,12 +56,9 @@ const logout = catchAsync(async (req, res, next) => {
 });
 
 const me = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) throw new AppError(404, 'User not found');
-
-  res.status(200).json({
+  res.send({
     status: 'success',
-    data: { user },
+    data: { user: req.user },
   });
 });
 
