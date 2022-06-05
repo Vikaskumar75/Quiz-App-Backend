@@ -1,4 +1,6 @@
 const User = require('../models/user_model');
+const AppError = require('../utils/app_error');
+const catchAsync = require('../utils/catch_async');
 
 const login = (req, res) => {
   res.send({
@@ -6,17 +8,23 @@ const login = (req, res) => {
   });
 };
 
-const signup = async (req, res, next) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.send({
-      status: true,
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+const signup = catchAsync(async (req, res, next) => {
+  const user = new User(req.body);
+  await user.save();
+  res.send({
+    status: true,
+    data: user,
+  });
+});
 
-module.exports = { login, signup };
+const me = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) throw new AppError(404, 'User not found');
+
+  res.status(200).json({
+    status: 'success',
+    data: { user },
+  });
+});
+
+module.exports = { login, signup, me };

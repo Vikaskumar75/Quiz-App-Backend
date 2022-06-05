@@ -1,8 +1,10 @@
+require('./utils/uncaught_exception_rejection');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 require('./db/mongo_db');
 const express = require('express');
 const morgan = require('morgan');
-const { handleError } = require('./utils/error');
+const AppError = require('./utils/app_error');
+const globalErrorHandler = require('./controller/error_controller');
 const userRouter = require('./router/user_router');
 
 const app = express();
@@ -18,12 +20,20 @@ app.use((req, res, next) => {
 });
 
 const version = process.env.VERSION;
+
 // registering routers
 app.use(version, userRouter);
 
-app.use('*', handleError);
-
-const port = process.env.PORT;
-app.listen(port, () => {
-  console.log('Server started listening on port:', port);
+// Handling unexpected route
+app.all('*', (req, _, next) => {
+  next(new AppError(404, `Requested url ${req.originalUrl} is not defined.`));
 });
+
+// Error handeling middleware
+app.use(globalErrorHandler);
+
+// Staring Server
+const port = process.env.PORT;
+const server = app.listen(port, () =>
+  console.log('Server started listening on port:', port)
+);
