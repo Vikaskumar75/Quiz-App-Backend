@@ -10,10 +10,11 @@ const login = (req, res) => {
 
 const signup = catchAsync(async (req, res, next) => {
   const user = new User(req.body);
+  const token = user.createJwtToken();
   await user.save();
   res.send({
     status: true,
-    data: user,
+    data: { user, token },
   });
 });
 

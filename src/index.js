@@ -34,6 +34,4 @@ app.use(globalErrorHandler);
 
 // Staring Server
 const port = process.env.PORT;
-const server = app.listen(port, () =>
-  console.log('Server started listening on port:', port)
-);
+app.listen(port, () => console.log('Server started listening on port:', port));

@@ -45,15 +45,17 @@ const handleDuplicateFieldsDB = (error) => {
 };
 
 const handleValidationErrorDB = (error) => {
-    const message = `Invalid ${error.path}: ${error.value}`;
-    return new AppError(400, message);
-  };
+  const keyValues = error.errors;
+  const firstValidationError = keyValues[Object.keys(keyValues)[0]];
+  const message = firstValidationError.message;
+  return new AppError(400, message);
+};
 
 module.exports = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || 'error';
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development.') {
     sendDevError(error, res);
   } else {
     sendProdError(error, res);

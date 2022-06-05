@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const validator = require('validator');
+const Session = require('./user_sessions');
 
 const schemaOptions = { timeStamps: true };
 
@@ -22,27 +25,36 @@ const schema = {
     type: String,
     required: [true, 'Please provide a password'],
   },
-  meta_data: {
-    device_name: String,
-    device_manufacturer: String,
-    android_version: String,
-    app_version: String,
-  },
   avatar: {
     type: Buffer,
   },
 };
-
 const userSchema = mongoose.Schema(schema, schemaOptions);
+
+userSchema.methods.toJSON = function () {
+  const userObject = this.toObject();
+
+  delete userObject.password;
+  delete userObject.__v;
+
+  return userObject;
+};
+
+userSchema.methods.createJwtToken = function () {
+  const token = jwt.sign(this._id.toString(), process.env.JWT_SECRET);
+  console.log(token);
+  const session = new Session({
+    token,
+    user: this._id,
+  });
+  session.save();
+  return token;
+};
+
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(this.password, 8);
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
-
-// tokens: [
-//     {
-//       token: {
-//         type: String,
-//         required: true,
-//       },
-//     },
-//   ],
