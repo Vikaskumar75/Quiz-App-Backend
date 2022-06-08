@@ -1,11 +1,9 @@
-require('./utils/uncaught_exception_rejection');
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
-require('./db/mongo_db');
 const express = require('express');
 const morgan = require('morgan');
 const AppError = require('./utils/app_error');
 const globalErrorHandler = require('./controller/error_controller');
 const userRouter = require('./router/user_router');
+const emailRouter = require('./router/email_router');
 
 const app = express();
 app.use(express.json());
@@ -20,9 +18,9 @@ app.use((req, res, next) => {
 });
 
 const version = process.env.VERSION;
-
 // registering routers
 app.use(version, userRouter);
+app.use(version, emailRouter);
 
 // Handling unexpected route
 app.all('*', (req, _, next) => {
@@ -32,6 +30,4 @@ app.all('*', (req, _, next) => {
 // Error handeling middleware
 app.use(globalErrorHandler);
 
-// Staring Server
-const port = process.env.PORT;
-app.listen(port, () => console.log('Server started listening on port:', port));
+module.exports = app;

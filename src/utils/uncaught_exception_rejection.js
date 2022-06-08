@@ -1,4 +1,3 @@
-// Handling unhandled Exception and Rejection
 process.on('unhandledRejection', (error) => {
   console.log('Unhandled Rejection 💥. Shutting down....');
   console.log(error.name, error.message);
@@ -7,6 +6,6 @@ process.on('unhandledRejection', (error) => {
 
 process.on('uncaughtException', (error) => {
   console.log('Uncaught Exception 💥. Shutting down....');
-  console.log(error.name, error.message);
+  console.log(error.name, error);
   process.exit(1);
 });
