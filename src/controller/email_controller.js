@@ -5,7 +5,7 @@ const AppError = require('../utils/app_error');
 
 const sendOtpEmail = catchAsync(async (req, res, next) => {
   const email = req.body.email;
-  
+
   if (!email) throw new AppError(400, 'Please provide an email');
   if (!validator.isEmail(email)) {
     throw new AppError(400, 'Make sure the email is valid');

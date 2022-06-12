@@ -9,7 +9,7 @@ const schema = {
   },
   device_name: String,
   device_manufacturer: String,
-  android_version: String,
+  os_version: String,
   token: {
     type: String,
     required: true,

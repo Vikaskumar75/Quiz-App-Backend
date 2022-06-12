@@ -38,6 +38,9 @@ const signup = catchAsync(async (req, res, next) => {
     ip_address: req.ip,
     token,
     user: newUser._id,
+    device_name: req.body.device_name,
+    device_manufacturer: req.body.device_manufacturer,
+    os_version: req.body.os_version,
   });
   await session.save();
 
