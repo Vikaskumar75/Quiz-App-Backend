@@ -91,4 +91,25 @@ const deleteMe = catchAsync(async (req, res, next) => {
   res.status(204).send();
 });
 
-module.exports = { login, signup, logout, me, updateMe, deleteMe };
+const checkavailabilty = catchAsync(async (req, res, next) => {
+  if (!req.body.email) throw new AppError(400, 'Please provide an email');
+
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) throw new AppError(404, `No user found with ${req.body.email}`);
+
+  res.send({
+    status: 'success',
+    data: { user },
+  });
+});
+
+module.exports = {
+  login,
+  signup,
+  logout,
+  me,
+  updateMe,
+  deleteMe,
+  checkavailabilty,
+};

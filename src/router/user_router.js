@@ -13,5 +13,6 @@ router
 router.post('/users/login', controller.login);
 router.post('/users/logout', auth, controller.logout);
 router.post('/users/signup', controller.signup);
+router.post('/users/checkavailability',controller.checkavailabilty);
 
 module.exports = router;

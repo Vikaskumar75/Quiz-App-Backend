@@ -16,11 +16,11 @@ const sendMail = (mailOptions) => {
   });
 };
 
-const sendOtp = (email,otp) => {
+const sendOtp = (email, otp) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    sendOtp: 'Verification OTP',
+    subject: 'Verification OTP',
     html: otpTemplate(otp),
   };
   sendMail(mailOptions);
