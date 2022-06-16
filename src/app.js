@@ -4,6 +4,7 @@ const AppError = require('./utils/app_error');
 const globalErrorHandler = require('./controller/error_controller');
 const userRouter = require('./router/user_router');
 const emailRouter = require('./router/email_router');
+const categoryRouter = require('./router/category_router');
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ const version = process.env.VERSION;
 // registering routers
 app.use(version, userRouter);
 app.use(version, emailRouter);
+app.use(version, categoryRouter);
 
 // Handling unexpected route
 app.all('*', (req, _, next) => {
