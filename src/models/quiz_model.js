@@ -48,7 +48,7 @@ const schema = {
     },
     createdAt: {
       type: Date,
-      immutable: true,
+      inmutable: true,
       default: () => Date.now(),
     },
     updatedAt: {
@@ -88,6 +88,7 @@ quizSchema.pre('remove', async function (next) {
     throw error;
   }
 });
+
 
 const quiz = mongoose.model('Quiz', quizSchema);
 

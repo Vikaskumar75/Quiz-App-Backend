@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Quiz = require('../models/quiz_model');
 const Question = require('../models/question_model');
 const catchAsync = require('../utils/catch_async');
@@ -16,8 +17,11 @@ const createQuiz = catchAsync(async (req, res, next) => {
     quiz: quiz._id,
   });
 
-  await questionSet.validate();
-  await quiz.validate();
+  const questionSetValidate = questionSet.validateSync();
+  if (questionSetValidate) throw questionSetValidate;
+
+  const quizValidate = quiz.validateSync();
+  if (quizValidate) throw quizValidate;
 
   await questionSet.save();
   await quiz.save();
@@ -53,6 +57,47 @@ const getQuiz = catchAsync(async (req, res, next) => {
   });
 });
 
+const updateQuiz = catchAsync(async (req, res, next) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    'name',
+    'avg_time_per_question',
+    'points_for_correct_answer',
+    'points_to_win',
+    'categories',
+    'questions',
+  ];
+
+  const isValidUpdate = updates.every((e) => allowedUpdates.includes(e));
+  if (!isValidUpdate) throw new AppError(400, `Invalid Update, Allowed Update fields ${allowedUpdates}`);
+
+  const quiz = await Quiz.findById(req.params.id);
+  if (!quiz) throw new AppError(404, 'Quiz not found');
+
+  updates.forEach((el) => {
+    if (el === 'questions') return;
+    quiz[el] = req.body[el];
+  });
+
+  const quizValidate = quiz.validateSync();
+  if (quizValidate) throw quizValidate;
+
+  if (updates.includes('questions')) {
+    const questionSet = await Question.findOne({ quiz: quiz._id });
+    questionSet.questions = req.body['questions'];
+    quiz.no_of_questions = questionSet.questions.length;
+
+    await questionSet.save();
+  }
+
+  await quiz.save();
+
+  res.send({
+    status: 'success',
+    data: { quiz, questions: `${req.baseUrl}/questions/${quiz._id}` },
+  });
+});
+
 const deleteQuiz = catchAsync(async (req, res, next) => {
   const quiz = await Quiz.findOne({ _id: req.params.id, 'meta_data.createdBy': req.user._id });
 
@@ -66,4 +111,4 @@ const deleteQuiz = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createQuiz, getQuizzes, getQuiz, deleteQuiz };
+module.exports = { createQuiz, getQuizzes, getQuiz, deleteQuiz, updateQuiz };

@@ -9,4 +9,14 @@ const setNoOfQuestions = catchAsync(async (req, res, next) => {
   next();
 });
 
-module.exports = { setNoOfQuestions };
+const setNoOfQuestionsWhileUpdating = catchAsync(async (req, res, next) => {
+  if (!req.body.questions) return next();
+
+  if (req.body.questions.length < 1) {
+    throw new AppError(400, 'You cannot create a quiz without questions.');
+  }
+
+  next();
+});
+
+module.exports = { setNoOfQuestions, setNoOfQuestionsWhileUpdating };
