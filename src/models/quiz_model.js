@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const AppError = require('../utils/app_error');
-const catchAsync = require('../utils/catch_async');
+const Question = require('./question_model');
 
 const schemaOptions = { timeStamps: true };
 
@@ -27,10 +27,6 @@ const schema = {
     default: 0,
   },
   warnings: [String],
-  rating: {
-    type: Number,
-    default: 4.5,
-  },
   categories: {
     type: [
       {
@@ -44,6 +40,22 @@ const schema = {
       }
     },
   },
+  meta_data: {
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    createdAt: {
+      type: Date,
+      immutable: true,
+      default: () => Date.now(),
+    },
+    updatedAt: {
+      type: Date,
+      default: () => Date.now(),
+    },
+  },
 };
 
 const quizSchema = mongoose.Schema(schema, { virtuals: true }, schemaOptions);
@@ -54,6 +66,10 @@ quizSchema.virtual('total_time').get(function () {
 quizSchema.virtual('total_points').get(function () {
   return this.points_for_correct_answer * this.no_of_questions;
 });
+quizSchema.virtual('rating').get(function () {
+  // Todo: added the logic to set rating using rating/review collection
+  return 4.5;
+});
 
 quizSchema.set('toJSON', { getters: true });
 
@@ -62,6 +78,15 @@ quizSchema.pre('validate', function (next) {
 
   if (!isValid) throw new AppError(400, 'Invalid winning criteria');
   next();
+});
+
+quizSchema.pre('remove', async function (next) {
+  try {
+    await Question.findOneAndDelete({ quiz: this._id });
+    next();
+  } catch (error) {
+    throw error;
+  }
 });
 
 const quiz = mongoose.model('Quiz', quizSchema);

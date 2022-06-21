@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.route('/quizzes').post(auth, setNoOfQuestions, controller.createQuiz).get(auth, controller.getQuizzes);
 
+router.route('/quizzes/:id').get(auth, controller.getQuiz).delete(auth, controller.deleteQuiz);
+
 module.exports = router;
