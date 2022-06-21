@@ -48,6 +48,13 @@ const handleDuplicateFieldsDB = (error) => {
 const handleValidationErrorDB = (error) => {
   const keyValues = error.errors;
   const firstValidationError = keyValues[Object.keys(keyValues)[0]];
+
+  // Some times the validation fails. When we try to cast one object to another.
+  // Therefore, for those cases we need to send CastError not ValidationError
+  if (firstValidationError.name === 'CastError') {
+    return handleCastErrorDB(firstValidationError);
+  }
+
   const message = firstValidationError.message;
   return new AppError(400, message);
 };

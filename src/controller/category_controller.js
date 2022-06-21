@@ -18,6 +18,7 @@ const read = catchAsync(async (req, res, next) => {
   const categories = await Category.find({});
   res.send({
     status: 'success',
+    total: categories.length,
     data: { categories },
   });
 });

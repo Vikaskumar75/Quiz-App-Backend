@@ -18,7 +18,7 @@ const schema = {
     required: [true, 'Please provide an email'],
     trim: true,
     lowercase: true,
-    validator(value) {
+    validate(value) {
       if (!validator.isEmail(value)) throw Error('Invaid email');
     },
   },
