@@ -63,15 +63,23 @@ const quizSchema = mongoose.Schema(schema, { virtuals: true }, schemaOptions);
 quizSchema.virtual('total_time').get(function () {
   return this.avg_time_per_question * this.no_of_questions;
 });
+
 quizSchema.virtual('total_points').get(function () {
   return this.points_for_correct_answer * this.no_of_questions;
 });
+
 quizSchema.virtual('rating').get(function () {
   // Todo: added the logic to set rating using rating/review collection
   return 4.5;
 });
 
-quizSchema.set('toJSON', { getters: true });
+quizSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (_, obj) {
+    delete obj.id;
+    delete obj.__v;
+  },
+});
 
 quizSchema.pre('validate', function (next) {
   const isValid = this.points_to_win <= this.points_for_correct_answer * this.no_of_questions;
@@ -88,7 +96,6 @@ quizSchema.pre('remove', async function (next) {
     throw error;
   }
 });
-
 
 const quiz = mongoose.model('Quiz', quizSchema);
 
