@@ -20,11 +20,8 @@ const createQuiz = catchAsync(async (req, res, next) => {
   const questionSetValidate = questionSet.validateSync();
   if (questionSetValidate) throw questionSetValidate;
 
-  const quizValidate = quiz.validateSync();
-  if (quizValidate) throw quizValidate;
-
-  await questionSet.save();
   await quiz.save();
+  await questionSet.save();
 
   res.status(201).send({
     status: 'success',
