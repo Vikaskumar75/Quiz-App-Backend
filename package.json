@@ -2,12 +2,17 @@
   "name": "quiz_app_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.js", 
+  "engines" : { 
+    "npm" : "8.19.2",
+    "node" : "18.12.1"
+  },
   "scripts": {
     "start": "NODE_ENV=production node src/server.js",
     "prod": "NODE_ENV=production nodemon src/server.js",
     "dev": "NODE_ENV=development nodemon src/server.js"
   },
+ 
   "keywords": [],
   "author": "",
   "license": "ISC",
